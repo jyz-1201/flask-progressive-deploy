@@ -1,76 +1,69 @@
-# Contributing to [project-title]
+# Contributing to ParlAI
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+While we are seeding this project with an initial set of popular tasks and a few
+models and examples, ongoing contributions from the research community are
+desired to increase the pool of tasks, models, and baselines.
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+## Pull Requests
+We actively welcome your pull requests.
 
- - [Code of Conduct](#coc)
- - [Issues and Bugs](#issue)
- - [Feature Requests](#feature)
- - [Submission Guidelines](#submit)
+1. Fork the repo and then clone the forked repository. (See this [github guide](https://guides.github.com/activities/forking/) on forking for more info).
+   **If you have already cloned the repo directly and committed changes, follow the steps in the [section below](#moving-changes-youve-committed-to-a-fork)**
+2. Create your branch from `main`. Set up your environment
+   and run `pre-commit install` once.
+3. Make your changes
+4. If you've added code that should be tested, [add tests](http://parl.ai/docs/tutorial_tests.html).
+5. If you've changed APIs, update the documentation.
+6. Autoformat and lint your code (`bash autoformat.sh`)
+7. (Optional) Ensure the test suite passes. Run `python -m pytest -m unit`.
+8. If you've added a new dataset, you should also run
+   `python -m pytest -m data`. Copy-paste the output into a comment in your PR.
+9. If you haven't already, complete the Contributor License Agreement ("CLA").
+10. Link [CircleCI](https://circleci.com/vcs-authorize/) to your github account
+   if you haven't done so previously (and make sure the CircleCI tests run
+   successfully on the PR after you push your changes).
+11. Push your changes!
+12. Once the PR is accepted and CI is passing, we will merge the PR for you.
 
-## <a name="coc"></a> Code of Conduct
-Help us keep this project open and inclusive. Please read and follow our [Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+### Moving changes you've committed to a fork
+1. Fork the repo
+2. In your local repo, rename your origin remote to upstream
+   ```
+   git remote rename origin upstream
+   ```
+3. Point origin to the forked repo (instead of to the original repo)
+   ```
+   git remote add origin git@github...<FORK>
+   ```
+4. Fetch from the new origin
+   ```
+   git fetch origin
+   ```
+5. Make your local branch track the remote branch (of the forked repo)
+   ```
+   git branch --set-upstream-to origin/main main
+   ```
 
-## <a name="issue"></a> Found an Issue?
-If you find a bug in the source code or a mistake in the documentation, you can help us by
-[submitting an issue](#submit-issue) to the GitHub Repository. Even better, you can
-[submit a Pull Request](#submit-pr) with a fix.
+## Contributor License Agreement ("CLA")
+In order to accept your pull request, we need you to submit a CLA. You only need
+to do this once to work on any of Facebook's open source projects.
 
-## <a name="feature"></a> Want a Feature?
-You can *request* a new feature by [submitting an issue](#submit-issue) to the GitHub
-Repository. If you would like to *implement* a new feature, please submit an issue with
-a proposal for your work first, to be sure that we can use it.
+Complete your CLA here: <https://code.facebook.com/cla>
 
-* **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
+## Issues
+We use GitHub issues for general feature discussion, Q&A and public bugs tracking.
+Please ensure your description is clear and has sufficient instructions to be able to
+reproduce the issue or understand the problem.
 
-## <a name="submit"></a> Submission Guidelines
+Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
+disclosure of security bugs. In those cases, please go through the process
+outlined on that page and do not file a public issue.
 
-### <a name="submit-issue"></a> Submitting an Issue
-Before you submit an issue, search the archive, maybe your question was already answered.
+## Coding Style
+We try to follow the PEP style guidelines and encourage you to as well. You
+should run the `lint_changed.sh` script before you submit.
 
-If your issue appears to be a bug, and hasn't been reported, open a new issue.
-Help us to maximize the effort we can spend fixing issues and adding new
-features, by not reporting duplicate issues.  Providing the following information will increase the
-chances of your issue being dealt with quickly:
-
-* **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
-* **Version** - what version is affected (e.g. 0.1.2)
-* **Motivation for or Use Case** - explain what are you trying to do and why the current behavior is a bug for you
-* **Browsers and Operating System** - is this a problem with all browsers?
-* **Reproduce the Error** - provide a live example or a unambiguous set of steps
-* **Related Issues** - has a similar issue been reported before?
-* **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
-  causing the problem (line of code or commit)
-
-You can file new issues by providing the above information at the corresponding repository's issues link: https://github.com/[organization-name]/[repository-name]/issues/new].
-
-### <a name="submit-pr"></a> Submitting a Pull Request (PR)
-Before you submit your Pull Request (PR) consider the following guidelines:
-
-* Search the repository (https://github.com/[organization-name]/[repository-name]/pulls) for an open or closed PR
-  that relates to your submission. You don't want to duplicate effort.
-
-* Make your changes in a new git fork:
-
-* Commit your changes using a descriptive commit message
-* Push your fork to GitHub:
-* In GitHub, create a pull request
-* If we suggest changes then:
-  * Make the required updates.
-  * Rebase your fork and force push to your GitHub repository (this will update your Pull Request):
-
-    ```shell
-    git rebase master -i
-    git push -f
-    ```
-
-That's it! Thank you for your contribution!
+## License
+By contributing to ParlAI, you agree that your contributions will be licensed
+under the LICENSE file in the root directory of this source tree.
