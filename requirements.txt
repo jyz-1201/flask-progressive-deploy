@@ -1,5 +1,6 @@
 Flask==2.0.3
 Flask_RESTful==0.3.9
+requests==2.27.1
 
 # comment just to bump caches
 boto3==1.17.95
@@ -36,7 +37,6 @@ regex>=2021.8.3
 myst-parser~=0.12.2
 attrs~=20.2.0
 requests-mock==1.7.0
-requests<3,>=2.21.0
 scikit-learn==0.23.1
 scipy==1.8.0
 sh==1.12.14
