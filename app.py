@@ -28,7 +28,7 @@ from flask_restful import Resource, Api
 from parlai.core.opt import Opt
 
 
-agent = create_agent({"mf": "zoo:blender/blender_90M/model"})
+agent = create_agent({"model_file": "zoo:blender/blender_90M/model"})
 app = Flask(__name__)
 api = Api(app)
 
