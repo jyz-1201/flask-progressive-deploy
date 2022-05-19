@@ -23,31 +23,25 @@ curl -k http://localhost:5000/response -H "Content-Type: application/json" -d '{
 from parlai.core.agents import create_agent
 from parlai.core.params import ParlaiParser
 from parlai.core.script import ParlaiScript, register_script
+from flask import Flask, request
+from flask_restful import Resource, Api
+from parlai.core.opt import Opt
 
 
-@register_script('flask', hidden=True)
-class Flask(ParlaiScript):
-    @classmethod
-    def setup_args(cls):
-        parser = ParlaiParser(True, True)
-        return parser
+agent = create_agent({"mf": "zoo:blender/blender_90M/model"})
+app = Flask(__name__)
+api = Api(app)
 
-    def chatbot_response(self):
-        from flask import request
-
-        data = request.json
-        self.agent.observe({'text': data["text"], 'episode_done': False})
-        response = self.agent.act()
+class Response(Resource):
+    def get(self):
+        data = request.headers.get("data")
+        agent.observe({'text': data, 'episode_done': False})
+        response = agent.act()
         return {'response': response['text']}
 
-    def run(self):
-        from flask import Flask
 
-        self.agent = create_agent(self.opt)
-        app = Flask("parlai_flask")
-        app.route("/response", methods=("GET", "POST"))(self.chatbot_response)
-        app.run(debug=True)
+api.add_resource(Response, '/response')
 
 
 if __name__ == "__main__":
-    Flask.main()
+    app.run(debug=True)
