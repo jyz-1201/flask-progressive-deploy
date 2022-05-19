@@ -1,62 +1,53 @@
-import urllib.request
-import urllib.parse
-import json
-from requests import put, get
+#!/usr/bin/env python3
 
-from flask import Flask, request
-from flask_restful import Resource, Api
+# Copyright (c) Facebook, Inc. and its affiliates.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
 
-app = Flask(__name__)
-api = Api(app)
+"""
+Example Flask server which hosts a model.
 
+## Examples
+**Serving the model**
+```shell
+parlai flask -m repeat_query
+parlai flask -mf zoo:blender/blender_90M/model
+```
 
-class GrammarCheck(Resource):
-    # def get(self):
-    #     return {'hello': request.form['username']}
-    # def put(self):
-    #     return {"put_hello": request.form['username']}
-    # def post(self):
-    #     return {"posted_hello": "res"}
-    def get(self):
-        url = 'https://languagetool.org/api/v2/check?language=en-US&text='
-        example = 'check?language=en-US&text=my+text'
+**Hitting the API***
+```shell
+curl -k http://localhost:5000/response -H "Content-Type: application/json" -d '{"text": "foobar"}'
+```
+"""
 
-        new_data = request.headers.get("data").replace(' ', '+')
-
-        url = url + new_data
-
-        rst = urllib.request.Request(url)
-
-        html = urllib.request.urlopen(rst).read().decode('utf-8')
-
-        list = ['Wrong article', 'Missing preposition', 'Agreement error', 'Possible grammar error',
-                'Grammatical problem',
-                'Missing preposition']
-        num_dict = {}
-        error_list = []
-
-        matches = json.loads(html)['matches']
-        for i in range(len(matches)):
-            if matches[i]["shortMessage"] != '':
-                str = matches[i]["shortMessage"]
-                error_dict = {}
-                error_dict["errorSentence"] = matches[i]["sentence"]
-                error_dict["errorType"] = str
-                error_dict["errorAdvice"] = matches[i]["message"]
-                error_dict["errorOffset"] = matches[i]["offset"]
-                error_dict["errorLength"] = matches[i]["length"]
-                error_dict["errorReplacement"] = matches[i]["replacements"]
-
-                error_list.append(error_dict)
-                if str in num_dict:
-                    num_dict[str] = 1 + num_dict[str]
-                else:
-                    num_dict[str] = 1
-        return {"most": sorted(num_dict.items(), key=lambda x: x[1], reverse=True)[0], "error": error_list[:]}
+from parlai.core.agents import create_agent
+from parlai.core.params import ParlaiParser
+from parlai.core.script import ParlaiScript, register_script
 
 
-api.add_resource(GrammarCheck, '/grammarCheck')
+@register_script('flask', hidden=True)
+class Flask(ParlaiScript):
+    @classmethod
+    def setup_args(cls):
+        parser = ParlaiParser(True, True)
+        return parser
+
+    def chatbot_response(self):
+        from flask import request
+
+        data = request.json
+        self.agent.observe({'text': data["text"], 'episode_done': False})
+        response = self.agent.act()
+        return {'response': response['text']}
+
+    def run(self):
+        from flask import Flask
+
+        self.agent = create_agent(self.opt)
+        app = Flask("parlai_flask")
+        app.route("/response", methods=("GET", "POST"))(self.chatbot_response)
+        app.run(debug=True)
 
 
 if __name__ == "__main__":
-    app.run()
+    Flask.main()
