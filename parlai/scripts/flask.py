@@ -46,7 +46,7 @@ class Flask(ParlaiScript):
         self.agent = create_agent(self.opt)
         app = Flask("parlai_flask")
         app.route("/response", methods=("GET", "POST"))(self.chatbot_response)
-        app.run(debug=True, port=8080)
+        app.run(debug=True, host='0.0.0.0', port=8080)
 
 
 if __name__ == "__main__":
