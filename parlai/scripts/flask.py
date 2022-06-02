@@ -45,35 +45,50 @@ class Flask(ParlaiScript):
         from flask import request
         # print("RECEIVED")
         self.turn_cnt += 1
+
+        # get user input
         data = request.headers.get("text")
+
+        # get agent responses
         self.agent.observe({'text': data, 'episode_done': False})
         response = self.agent.act()
+
         # print(response)
         # rand_int = random.randint(0, 4)
+
+        # random choose from all beam_texts for better response variation
         response.force_set("text", random.choice(response["beam_texts"])[0])
+
+        # check the last question in the chosen beam response
         response_by_sent = sent_tokenize(response['text'])
         last_question = len(response_by_sent) - 1
         find_flag = False
-        class_begin = False
         for id, sent in reversed(list(enumerate(response_by_sent))):
             if sent.find("?") != -1:
                 last_question = id
                 find_flag = True
                 break
+
+        # check if condition for beginning a class meet
+        class_begin = False
         if (self.turn_cnt >= 3 and find_flag == True and last_question != 0) or\
                 (self.turn_cnt >= 7 and find_flag == True):
             response.force_set("text", "")
-            response_by_sent[last_question] = random.choice(class_start_sentences) 
+            response_by_sent[last_question] = random.choice(class_start_sentences)
             self.turn_cnt = 0
             class_begin = True
             self.agent.reset()
+
+            # restore the tokenized response
             for id, s in enumerate(response_by_sent):
                 if id <= last_question:
                     # print(s)
                     response.force_set('text', response["text"] + s)
                 else:
                     break
+
         # print(response)
+        # response to user
         if class_begin:
             return {'response': "[ClassBegin]" + response['text']}
         else:
