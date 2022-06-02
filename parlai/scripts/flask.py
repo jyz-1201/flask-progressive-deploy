@@ -54,10 +54,10 @@ class Flask(ParlaiScript):
         response = self.agent.act()
 
         # print(response)
-        # rand_int = random.randint(0, 4)
+        rand_int = random.randint(0, min(4, len(response["beam_texts"])))
 
         # random choose from all beam_texts for better response variation
-        response.force_set("text", random.choice(response["beam_texts"])[0])
+        response.force_set("text", response["beam_texts"][rand_int][0])
 
         # check the last question in the chosen beam response
         response_by_sent = sent_tokenize(response['text'])
