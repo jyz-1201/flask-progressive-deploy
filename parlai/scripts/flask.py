@@ -35,7 +35,7 @@ class Flask(ParlaiScript):
     def chatbot_response(self):
         from flask import request
 
-        data = request.json
+        data = request.headers.get("text")
         self.agent.observe({'text': data["text"], 'episode_done': False})
         response = self.agent.act()
         response_by_sent = sent_tokenize(response['text'])
@@ -49,12 +49,13 @@ class Flask(ParlaiScript):
         if find_flag == True:
             response.force_set("text", "")
             response_by_sent[last_question] = "Okay, so are you ready for our class?"
+            self.agent.reset()
             for id, s in enumerate(response_by_sent):
                 if id <= last_question:
                     response.force_set('text', response["text"].join(s))
                 else:
                     break
-        print(response)
+        # print(response)
         return {'response': response['text']}
 
     def run(self):
@@ -63,7 +64,7 @@ class Flask(ParlaiScript):
         self.agent = create_agent(self.opt)
         app = Flask("parlai_flask")
         app.route("/response", methods=("GET", "POST"))(self.chatbot_response)
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        app.run(host='0.0.0.0', port=5000)
 
 
 if __name__ == "__main__":
