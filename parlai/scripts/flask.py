@@ -49,8 +49,8 @@ class Flask(ParlaiScript):
         self.agent.observe({'text': data, 'episode_done': False})
         response = self.agent.act()
         # print(response)
-        rand_int = random.randint(0, 4)
-        response.force_set("text", response["beam_texts"][rand_int][0]);
+        # rand_int = random.randint(0, 4)
+        response.force_set("text", random.choice(response["beam_texts"])[0])
         response_by_sent = sent_tokenize(response['text'])
         last_question = len(response_by_sent) - 1
         find_flag = False
