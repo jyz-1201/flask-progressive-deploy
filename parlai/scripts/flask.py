@@ -52,28 +52,26 @@ class Flask(ParlaiScript):
         # get agent responses
         self.agent.observe({'text': data, 'episode_done': False})
         response = self.agent.act()
-
         # print(response)
-        # rand_int = random.randint(0, min(4, len(response["beam_texts"]) - 1))
 
         # random choose from all beam_texts for better response variation
-        # response.force_set("text", response["beam_texts"][rand_int][0])
         response.force_set("text", random.choice(response["beam_texts"])[0])
+        # rand_int = random.randint(0, min(4, len(response["beam_texts"]) - 1))
+        # response.force_set("text", response["beam_texts"][rand_int][0])
 
         # check the last question in the chosen beam response
         response_by_sent = sent_tokenize(response['text'])
         last_question = len(response_by_sent) - 1
-        find_flag = False
+        question_cnt = 0
         for id, sent in reversed(list(enumerate(response_by_sent))):
             if sent.find("?") != -1:
                 last_question = id
-                find_flag = True
-                break
+                question_cnt += 1
 
         # check if condition for beginning a class meet
         class_begin = False
-        if (self.turn_cnt >= 3 and find_flag == True and last_question != 0) or\
-                (self.turn_cnt >= 7 and find_flag == True):
+        if ((self.turn_cnt >= 3 and question_cnt > 0 and last_question != 0) or \
+                (self.turn_cnt >= 7 and question_cnt > 0)) and question_cnt <= 1:
             response.force_set("text", "")
             response_by_sent[last_question] = random.choice(class_start_sentences)
             self.turn_cnt = 0
@@ -87,9 +85,9 @@ class Flask(ParlaiScript):
                     response.force_set('text', response["text"] + s)
                 else:
                     break
-
         # print(response)
-        # response to user
+
+        # send response to user
         if class_begin:
             return {'response': "[ClassBegin]" + response['text']}
         else:
