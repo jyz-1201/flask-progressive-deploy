@@ -39,9 +39,22 @@ class Flask(ParlaiScript):
         self.agent.observe({'text': data["text"], 'episode_done': False})
         response = self.agent.act()
         response_by_sent = sent_tokenize(response['text'])
-        if response_by_sent[-1].find("?") != -1:
-            response_by_sent[-1] = "Okay, so are you ready for our class?"
-        response['text'] = ' '.join([s for s in response_by_sent])
+        last_question = len(response_by_sent) - 1
+        find_flag = False
+        for id, sent in reversed(list(enumerate(response_by_sent))):
+            if sent.find("?") != -1:
+                last_question = id
+                find_flag = True
+                break
+        if find_flag == True:
+            response.force_set("text", "")
+            response_by_sent[last_question] = "Okay, so are you ready for our class?"
+            for id, s in enumerate(response_by_sent):
+                if id <= last_question:
+                    response.force_set('text', response["text"].join(s))
+                else:
+                    break
+        print(response)
         return {'response': response['text']}
 
     def run(self):
@@ -50,7 +63,7 @@ class Flask(ParlaiScript):
         self.agent = create_agent(self.opt)
         app = Flask("parlai_flask")
         app.route("/response", methods=("GET", "POST"))(self.chatbot_response)
-        app.run(host='0.0.0.0', port=5000)
+        app.run(debug=True, host='0.0.0.0', port=5000)
 
 
 if __name__ == "__main__":
