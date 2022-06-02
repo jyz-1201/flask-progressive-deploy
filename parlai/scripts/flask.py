@@ -70,8 +70,8 @@ class Flask(ParlaiScript):
 
         # check if condition for beginning a class meet
         class_begin = False
-        if ((self.turn_cnt >= 3 and question_cnt > 0 and last_question != 0) or \
-                (self.turn_cnt >= 7 and question_cnt > 0)) and question_cnt <= 1:
+        if ((self.turn_cnt >= 4 and question_cnt > 0 and last_question != 0) or \
+                (self.turn_cnt >= 8 and question_cnt > 0)) and question_cnt <= 1:
             response.force_set("text", "")
             response_by_sent[last_question] = random.choice(class_start_sentences)
             self.turn_cnt = 0
