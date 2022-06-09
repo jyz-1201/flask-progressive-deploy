@@ -43,16 +43,17 @@ class Flask(ParlaiScript):
 
     def chatbot_response(self):
         from flask import request
-        # print("RECEIVED")
+        print("RECEIVED")
         self.turn_cnt += 1
 
         # get user input
         data = request.headers.get("text")
-
+        print(data)
         # get agent responses
         self.agent.observe({'text': data, 'episode_done': False})
         response = self.agent.act()
-        # print(response)
+        print("MODEL RESPONSE")
+        print(response)
 
         # random choose from all beam_texts for better response variation
         response.force_set("text", random.choice(response["beam_texts"])[0])
@@ -85,7 +86,8 @@ class Flask(ParlaiScript):
                     response.force_set('text', response["text"] + s)
                 else:
                     break
-        # print(response)
+        print("FINAL RESPONSE")
+        print(response)
 
         # send response to user
         if class_begin:
