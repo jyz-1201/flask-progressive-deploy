@@ -20,7 +20,7 @@ curl -k http://localhost:5000/response -H "Content-Type: application/json" -d '{
 ```
 """
 
-
+import re
 import random
 from datetime import datetime
 random.seed(datetime.now())
@@ -59,7 +59,11 @@ class Flask(ParlaiScript):
         response.force_set("text", random.choice(response["beam_texts"])[0])
         # rand_int = random.randint(0, min(4, len(response["beam_texts"]) - 1))
         # response.force_set("text", response["beam_texts"][rand_int][0])
-
+        
+        # remove duplicated spaces around '
+        original_response = response['text']
+        new_response = re.sub("\s*'\s*", "'", original_response)
+        response.force_set("text", new_response)
         # check the last question in the chosen beam response
         response_by_sent = sent_tokenize(response['text'])
         last_question = len(response_by_sent) - 1
